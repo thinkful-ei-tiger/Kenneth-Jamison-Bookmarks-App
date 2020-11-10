@@ -1,10 +1,7 @@
-# Bookmark Saver
-[Click me to check it out](https://thinkful-ei-tiger.github.io/5/)
+Bookmark Application https://thinkful-ei-tiger.github.io/
 
-# What this app does for you:
+Application Details:
 
-- See a list of saved bokmarks
-- Add new bookmarks using a title, url, rating, and a description.
-- Edit a bookmarks name, rating, and description
-- Filter your bookmark by rating
-- Clicking on a bookmark's name displays the description, with an option to visit the site itself
+See a list a bookmarks that you have saved visit edit and add bookmarks
+
+(to view the details click the title of the bookmark. To edit the bookmark click edit and then click the paragraph section to edit)
