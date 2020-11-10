@@ -26,7 +26,7 @@ function saveBookmark(){
   })
 .then(response => response.json())
 .then(postedJson => store.store.bookmarks.push(postedJson))
-.catch(error => alert('Something went wrong, try again.'));
+.catch(error => alert('error.'));
 }
 
 
