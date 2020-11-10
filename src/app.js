@@ -8,14 +8,7 @@ import api from './api';
 
 function startUpPage(){
   return $('main').html(`    
-  <nav class='navBar'>
-    <ul class='navMenu'>
-      <li class='navList'>Home</li>
-      <li class='navList'>Home</li>
-      <li class='navList'>Home</li>
-      <li class='navList'>Home</li>
-    </ul>
-  </nav>
+ 
   <h1>Bookmark App</h1>
 
   <section id="beginning" class="beginning"> 
