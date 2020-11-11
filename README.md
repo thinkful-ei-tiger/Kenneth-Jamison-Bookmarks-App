@@ -1,5 +1,5 @@
 # Kenneth-bookmarks-app-master
-[click this link](https://kennethjamison.github.io/Kenneth-bookmarks-app-master/dist/)
+[Click here for live working repo](https://kennethjamison.github.io/Kenneth-bookmarks-app-master/dist/)
 
 
 
