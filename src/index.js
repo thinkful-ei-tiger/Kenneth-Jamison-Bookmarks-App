@@ -1,11 +1,15 @@
-import $ from 'jquery';
+
+
+
 import './main.css';
-import app from './app.js';
 
 
-function main(){
-   app.bindEventListeners();
-   app.bookmarkList();
+import app from './app';
+
+function main() {
+  app.initialize();
+  app.bindEventListeners();
+  app.render('main');
 }
 
-$(main);
+main ();

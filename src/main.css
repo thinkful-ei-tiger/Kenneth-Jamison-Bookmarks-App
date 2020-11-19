@@ -1,6 +1,9 @@
 *{
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   text-align: center;
+  justify-content: center;
+  align-items: center;
+  
 }
 
 .hidden{
@@ -9,3 +12,26 @@
 
 
 
+.add-bookmark-form{
+ background-color: grey;
+}
+
+li{
+  list-style-type: none;
+  margin-left: -80px;
+}
+
+
+
+  
+  
+
+
+.bookworm{
+  flex: 1;
+  flex-direction: row;
+}
+
+.error-box{
+  border: 1px solid black;
+}

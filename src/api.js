@@ -1,74 +1,55 @@
-import $ from 'jquery';
-import store from './store';
+const BASE_URL = 'https://thinkful-list-api.herokuapp.com/kenneth-jamison';
 
-  let BASE_URL = 'https://thinkful-list-api.herokuapp.com';
-  let get = `${BASE_URL}/kenneth-jamison/bookmarks`;
-  let post = `${BASE_URL}/kenneth-jamison/bookmarks`;
-  let patch = `${BASE_URL}/kenneth-jamison/bookmarks/`;
-  let deleteIt = `${BASE_URL}/kenneth-jamison/bookmarks/`;
+function listApiFetch(...args) {
+  let error;
+  return fetch(...args)
+    .then(res => {
+      if (!res.ok) {
+        error = { code: res.status };
+        if (!res.headers.get('content-type').includes('json')) {
+          error.message = res.statusText;
+          return Promise.reject(error);
+        }
+      }
 
+      return res.json();
+    })
+    .then(data => {
+      if (error) {
+        error.message = data.message;
+        return Promise.reject(error);
+      }
 
+      return data;
+    });
+}
 
-function saveBookmark(){
-  let name = $('#siteName').val();
-  let siteLink = $('#siteURL').val();
-  let description = $('#description').val();
-  let rating = $('input[type="radio"]:checked').val();
-  return fetch(post, {
+function getBookmarks() {
+  return listApiFetch(`${BASE_URL}/bookmarks`);
+}
+
+function createBookmark(bookmark) {
+  const newBookmark = JSON.stringify(bookmark);
+  return listApiFetch(`${BASE_URL}/bookmarks`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      "title": name,
-      "url": siteLink,
-      "desc": description,
-      "rating": rating
-    })
-  })
-.then(response => response.json())
-.then(postedJson => store.store.bookmarks.push(postedJson))
-.catch(error => alert('Something went wrong, try again.'));
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: newBookmark
+  });
 }
 
 
 
-function showBookmarks(){
-  return fetch(get)
-  .then(response => response.json())
-  .then(getJson =>  store.store.bookmarks = getJson)
-  .catch(error => alert('Something went wrong, try again.'));
-  }
-
-
-
-function deleteBookmarks(id){
-  return fetch(`${deleteIt}${id}`, {
+function deleteBookmark(id) {
+  return listApiFetch(`${BASE_URL}/bookmarks/${id}`, {
     method: 'DELETE'
-  })
+  });
 }
 
-
-function editBookmarks(id, name, rating, description) {
-
-  fetch(patch + id, {
-    method: 'PATCH',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      "title": name,
-      "desc": description,
-      "rating": rating
-    })
-  })
-  .then(response => response.json())
-  .then(patchJson => console.log(patchJson))
-  .catch(error => alert('Error try again...'));
-}
-
-
-
-
-export default{
-  saveBookmark,
-  showBookmarks,
-  deleteBookmarks, 
-  editBookmarks, 
-}
+export default {
+  listApiFetch,
+  getBookmarks,
+  createBookmark,
+  deleteBookmark
+};

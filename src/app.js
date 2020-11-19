@@ -1,288 +1,235 @@
 import $ from 'jquery';
-import store from './store';
-import api from './api';
+import cuid from 'cuid';
+
+import store from './store.js';
+import api from './api.js';
 
 
+function createError() {
+  if(store.error) {
+    return`<section class="error-box">
+              <p "error-content">Error: ${store.getError()}</p>
+              <button id="cancel-error">OK</button>
+            </section>`;
 
+  }
+  return '';
+}
 
+function generateStarRating (numStars) {
+  let starString = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < numStars) starString += '🌟';
+    else starString += '☆';
+  }
+  return starString;
+}
 
-function startUpPage(){
-  return $('main').html(`    
-  <h1>Bookmark App</h1>
+function formBookmarkListItems() {
+  let itemString = '';
+  store.bookmarks.forEach(function(bookmark) {
+    if(bookmark.rating >= store.filter) {  
+      if(bookmark.expanded) {
 
-  <section id="beginning" class="beginning"> 
-    
-    <h2 id="adding" class="initialAdd"><button>ADD </button></h2>
-    <section class="bookmarkNum">
-      <select id="filter" class="bookmark-select" id="filter">
-        <option value="" >Rate⭐</option>
-        <option value="5">5⭐⭐⭐⭐⭐</option>
-        <option value="4">4+⭐⭐⭐⭐</option>
-        <option value="3">3+⭐⭐⭐</option>
-        <option value="2">2+⭐⭐</option>
-        <option value="1" >1+⭐</option>
-      </select>
-    </section>  
-  </section>  
-    <section id="formContainer" class="formContainer">
-        
-      </section>
+        itemString += `<ul class='js-bookmark-element-menu'>
+                      <li class="js-bookmark-element" data-bookmark-id="${bookmark.id}">
+                        <p class="highlight">${bookmark.title}:</p>
+                        <p>${bookmark.desc}</p>
+                        <div class="expanded-container">
+                         <p>View Site: <a target="_blank" class="hover" href="${bookmark.url}"> Click Here!</a></p>
+                         <p>Rating: ${generateStarRating(bookmark.rating)}</p>
+                        </div> 
+                        <div class="delete-bookmark">
+                          <label for="button-delete"> <button class="button-del" name="button-delete" type="button">Delete</button></label>
+                        </div>                    
+                     </li>
+                     </ul>
+                     <hr>`;
+      }
+      else {
+        itemString += `<ul class='js-bookmark-element-menu'>
+                      <li class="js-bookmark-element" data-bookmark-id="${bookmark.id}">${bookmark.title}
+                         <span class="stars">${generateStarRating(bookmark.rating)}</span>
+                       </li>
+                       </ul>
+                       <hr>`;
+      }
+    }
+  });
+  return itemString;
+}
 
-
-      <section id="listContainer" class="listContainer">
-          <section id="bookmarkList" class="listDisplay">
-            
-            <section class="listItems" id="filler">
-                
-                  <p class="emptyMarks"><b>Add a bookmark</b></p>
-  
-              <section>
-
+function generateMainString() {
+  return `<section class="upper-container">
+            <div class="new-bookmark">
+              <button class="button-new" name="button-new" type="button">+Add</button>
+            </div>
+            <div class="filter-by">
+              <label>
+            <select id="js-filter" name="filter">
+              <option label="filter" value="" selected="selected">Filter</option> </label>        
+                <option value="1">${generateStarRating(1)}</option>
+                <option value="2">${generateStarRating(2)}</option>
+                <option value="3">${generateStarRating(3)}</option>
+                <option value="4">${generateStarRating(4)}</option>
+                <option value="5">${generateStarRating(5)}</option>                                                
+              </select>
+            </div> 
           </section>
-      </section>`);
+          <section class="bookmarks">
+            <ul class="js-ul-bookmarks">
+              ${formBookmarkListItems()}
+            </ul>
+          </section>`;
 }
 
-function generateForm(){
-  return `<h2 class="newBm">New Bookmark</h2>
-  <section id="formUp">
-    <section id="listContainer" class="listContainer listDisplay">
-      <section>
-        <form class="addingNew">
-          <fieldset>
-            <legend>New Bookmark</legend>
-            <label for="siteName">Title:</label>
-            <input id="siteName" class="boxed" type="text" name="site" placeholder="Name"><br>
-
-            <label for="siteURL">URL:</label>
-            <input id="siteURL" class="boxed" type="text" name="siteURL" required placeholder="https://"><br>
-
-            <label for="description">Description:</label><br>
-            <textarea name="description" class="boxed" id="description" cols="30" rows="10" placeholder="Site Description"></textarea><br><br>
-            <section id="rating" class="rating">
-              <p>Rate Your Bookmark Below </p>
-              <span><input type="radio" name="rating" id="str5" value="5" required><label for="str5">5</label></span>
-              <span><input type="radio" name="rating" id="str4" value="4"><label for="str4">4</label></span>
-              <span><input type="radio" name="rating" id="str3" value="3"><label for="str3">3</label></span>
-              <span><input type="radio" name="rating" id="str2" value="2"><label for="str2">2</label></span>
-              <span><input type="radio" name="rating" id="str1" value="1"><label for="str1">1</label></span>
-            </section>
-          </fieldset>
-          
-          <section class="linkRemove"> 
-            <button id="cancel">Cancel </button>
-            <button alt="Submit" id="addBookmark"> Add </button>
-          </section>
-        </form>
-
-  </section>`;
+function generateAddString() {
+  return `<form class="add-bookmark-form">
+            <fieldset name="form-field" class='bookworm'>
+              <label class="label" for="new-book-link">URL:</label>
+              <br>
+              <input id="new-book-link" type="text" name="new-book-link" placeholder="https://www..."><br>
+              <br>
+              <label class="label" for="new-book-title">Website Title:</label>
+              <br>
+              <input class="label" id="new-book-title" type="text" name="new-book-title" placeholder="Add Title Here!"><br>
+              <br>
+              <label class="label" for="new-book-desc">Description:</label>
+              <br>
+              <input id='new-book-desc' type="text" name="new-book-desc" placeholder="Add description here!"><br>
+              <br>
+              <label>
+              <select id="new-filter" name="add-filter">
+                <option value="" selected="selected">Rating</option></label>         
+                <option value="1">${generateStarRating(1)}</option>
+                <option value="2">${generateStarRating(2)}</option>
+                <option value="3">${generateStarRating(3)}</option>
+                <option value="4">${generateStarRating(4)}</option>
+                <option value="5">${generateStarRating(5)}</option>                                                
+              </select>
+              <div class="sub-cancel">
+                <button class="button-add-submit" type="submit">Submit</button>
+                <button class="button-add-cancel" type="reset">Cancel</button>
+              </div>
+              ${createError()}              
+            </fieldset>
+          </form>`;
 }
 
+function render(myScreen) {
+  let htmlString;
+  switch (myScreen) {
+  case 'main':
+    htmlString = generateMainString();
+    break;
 
-function addToList(){
-  let list = store.store.bookmarks;
-  for(let i = 0; i < list.length; i++){  
-    $('#bookmarkList').append(`
-    <section id="${list[i].id}" class="listItems">
-      <span class="nameTitle collapse" contenteditable="false"><b>${list[i].title}</b></span>
-      <span class="stars" contenteditable="false"><button>⭐</button><b>${list[i].rating}</b></span>
-      <section class="moveRight">
-        <button class="edit"> Edit </button>
-        <button class="delButton"> Delete </button>
-        <input type="checkbox" placeholder='checked' border="0" alt="Submit" ></input>
-      </section>
-      <section class="editing">
-        <p class="hidden description" contenteditable="false">${list[i].desc}<br>
-        <a href=${list[i].url} target="_blank"><button> Visit</button></a></p>
-        <button alt='submit'> Save </button>
-      </section>
-    </section>`)};
+  case 'add':
+    htmlString = generateAddString();
+    break;
+  }
+  $('.js-main-window').html(htmlString);
 }
 
+function initialize() {
+  api.getBookmarks()
+    .then((bookmarks) => {
+      bookmarks.forEach((bookmark) => store.addBookmark(bookmark));
+      render('main');
+    });    
+}
 
+function getTitleIdFromElement(bookmark) {
+  return $(bookmark)
+    .closest('.js-bookmark-element')
+    .data('bookmark-id');
+}
 
-function newBookmarkEvent(){
-  $('body').on('click', '#adding', function (){
-    store.store.adding = true;
-    $('.listContainer').toggleClass('hidden');
-    $('.formContainer').toggleClass('hidden');
-    $('#beginning').toggleClass('hidden');
-    render();
+function handleAdd() {
+  $('.js-main-window').on('click', '.button-new', function () {
+    render('add');
   });
 }
 
+function handleExpand() {
+  $('.js-main-window').on('click', 'li', function(event) {
+    const id = getTitleIdFromElement(event.currentTarget);
+    store.toggleExpanded(id);
+    render('main');
+  });
+}
 
-function bookmarkFormSubmit(){
-  $('body').on('submit','.addingNew', function(event){
+function handleSubmit() {
+  $('.js-main-window').on('submit', '.add-bookmark-form', function (event) {
     event.preventDefault();
-    $('#formContainer').toggleClass('hidden');
-    api.saveBookmark()
-    .then(function (){
-      $('#beginning').toggleClass('hidden');
-      console.log('added');
-      store.store.adding = false;
-      render()
-    })
+    let newBookmark = {
+      id: cuid(),
+      title: `${$(this).find('#new-book-title').val()}`,
+      rating: `${$(this).find('#new-filter').val()}`,
+      url: `${$(this).find('#new-book-link').val()}`,
+      desc: `${$(this).find('#new-book-desc').val()}`
+    };
+    api.createBookmark(newBookmark)
+      .then((newBM) => {
+        store.addBookmark(newBM);
+        render('main');        
+      })
+      .catch((err) => {
+        store.setError(err.message);
+        render('add');        
+      });
   });
 }
 
-function cancelForm() {
-  $('body').on('click', '#cancel', function() {
-    console.log('cancel');
-    $('.listContainer').toggleClass('hidden');
-    $('#formContainer').toggleClass('hidden');
-    $('.beginning').show();
-    store.store.adding = false;
-    render();
-  })
-}
-
-
-function deleteBookmark() {
-  $('body').on('click', '.delButton', function(event) {
-    let id = $(event.target).closest('.listItems').attr('id');
-    api.deleteBookmarks(id)
-    .then(function () {
-      api.showBookmarks()
-        .then(function () {
-          render()
-        })
-    })
-  })
-}
-
-
-function showDescription(){
-  $('body').on('click', '.nameTitle', function (event) {
-    let item = $(event.target).closest('.listItems').find('p');
-    item.toggleClass('hidden');
-  })
-}
-
-
-function editBookmark() {
-  $('body').on('click', '.edit', function() {
-    console.log('clicked');
-    $(this).siblings('.save').show();
-    $(this).parent().siblings('.nameTitle').attr('contenteditable', 'true').toggleClass('boxed');
-    $(this).parent().siblings('.stars').attr('contenteditable', 'true').toggleClass('boxed');
-    $(this).parent().siblings('.editing').find('.description').attr('contenteditable', 'true').toggleClass('boxed');
-
-  })
-}
-
-
-function saveEditBookmark() {
-  $('body').on('click', '.save', function() {
-    console.log('works');
-    $(this).hide();
-
-    let name = $(this).parent().siblings('.nameTitle').toggleClass('boxed');
-    let rating = $(this).parent().siblings('.stars').toggleClass('boxed');
-    let description = $(this).parent().siblings('.editing').find('.description').toggleClass('boxed');
-    let id = $(this).parents('.listItems').attr('id');
-
-    name.attr('contenteditable', 'false');
-    rating.attr('contenteditable', 'false');
-    description.attr('contenteditable', 'false');
-
-  api.editBookmarks(id, name.text(), rating.text(), description.text());
-  })
-}
-
-
-
-function sortBy(){
-  $('body').on('change', '.bookmark-select', function() {
-    let rating = $(this).val();
-    let sorted = store.store.bookmarks.filter( function (item) {
-      return item.rating >= rating;
-    })
-    console.log(sorted);
-    displaySorted(sorted);
-  })
-}
-
-
-function displaySorted(store){
-  let list = store;
-  let html = '';
-  for(let i = 0; i < list.length; i++){  
-    html += `
-    <section id="${list[i].id}" class="listItems">
-      <span class="nameTitle collapse" contenteditable="false"><b>${list[i].title}</b></span>
-      <span class="stars" contenteditable="false"><img src=${rating}/><b>${list[i].rating}</b></span>
-      <section class="moveRight">
-        <img src=${pen} class="edit"/>
-        <img src=${deleteIt} class="delButton"/>
-        <button class="hidden save">SAVE</button>
-      </section>
-      <section class="editing">
-        <p class="hidden description" contenteditable="false">${list[i].desc}<br>
-        <a href=${list[i].url} target="_blank"><img src=${visit}/></a></p>
-      </section>
-    </section>`};
-
-    $('#bookmarkList').html(html);
-}
-
-
-function bookmarkList(){
-  api.showBookmarks()
-  .then(function () {
-    render();
-  })
-  }
-
-
-function ratings(){
-  $(".rating input:radio").attr("checked", false);
-  $('.rating input').on('click', function () {
-      $(".rating span").removeClass('checked');
-      $(this).parent().addClass('checked');
+function handleCancelAdd() {
+  $('.js-main-window').on('click', '.button-add-cancel', function () {
+    render('main');
   });
-};
-
-
-function render(){
-
-  if(store.store.adding) {
-    console.log('with');
-    $('#formContainer').html(generateForm());
-    $('#formContainer').toggleClass('hidden');
-  }
-  else{
-    startUpPage();
-    addToList();
-    $('#filter').prop('selectedIndex',0);
-  }
-
-  $('#listContainer').addClass('testing')
-
-  if(store.store.bookmarks.length > 0) {
-    $('.listContainer .emptyMarks').addClass('hidden')
-  } 
-  else {
-    $('.listContainer .emptyMarks').removeClass('hidden')
-  }
 }
 
-function bindEventListeners(){ 
-  newBookmarkEvent();
-  bookmarkFormSubmit();
-  deleteBookmark();
-  ratings();
-  showDescription();
-  editBookmark();
-  saveEditBookmark();
-  sortBy();
-  cancelForm();
+function handleDelete() {
+  $('.js-main-window').on('click', '.button-del', function(event) {
+    const id = getTitleIdFromElement(event.currentTarget);
+
+    api.deleteBookmark(id)
+      .then(() => {
+        store.findAndDelete(id);
+        render('main');        
+      })
+      .catch((err) => {
+        store.setError(err.message);
+        render('add');        
+      });
+  });
 }
 
+function handleFilter() {
+  $('.js-main-window').on('change','#js-filter', function() {
+    let filter = $(this).val();
+    store.setFilter(filter);
+    render('main');    
+  });
+}
 
+function handleErrorClear() {
+  $('.js-main-window').on('click', '#cancel-error', function () {
+    store.clearError();      
+    render('add');
+  });
+ 
+}
 
-export default { 
-  generateForm, 
+function bindEventListeners() {
+  handleAdd();
+  handleExpand();
+  handleSubmit();
+  handleCancelAdd();
+  handleDelete();
+  handleFilter();
+  handleErrorClear();
+}
+
+export default {
+  initialize,
   bindEventListeners,
-  bookmarkList,
-  startUpPage
-}
+  render
+};
