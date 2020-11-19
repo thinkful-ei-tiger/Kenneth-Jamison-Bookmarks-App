@@ -1,18 +1,19 @@
 # Kenneth-bookmarks-app-master
-[Click here for live working repo](https://kennethjamison.github.io/Kenneth-bookmarks-app-master/dist/)
+# [Click here for live working repo](https://thinkful-ei-tiger.github.io/Kenneth-Jamison-Bookmarks-App/)
 
 
 
-(to view the details click the title of the bookmark. To edit the bookmark click edit and then click the paragraph section to edit)
+You can add, delete, rate, and save bookmarks.
 
-I can add bookmarks to my bookmark list. Bookmarks contain:
 
-title url link description rating (1-5) I can see a list of my bookmarks when I first open the app
+# App Features:
 
-All bookmarks in the list default to a "condensed" view showing only title and rating I can click on a bookmark to display the "detailed" view
+See a list of the bookmarks stored in the API.
 
-Detailed view expands to additionally display description and a "Visit Site" link I can remove bookmarks from my bookmark list
+Create a new bookmark containing title, url, rating and description.
 
-I receive appropriate feedback when I cannot submit a bookmark
+View an error message when an error occurs and then clear it.
 
-Check all validations in the API documentation (e.g. title and url field required) I can select from a dropdown (a element) a "minimum rating" to filter the list by all bookmarks rated at or above the chosen selection (Extension feature - optional) I can edit the rating and description of a bookmark in my list
+Filter rating by a star value of 1 to 5.
+
+Click a bookmark and it will expand additional details: bookmark description, link to open the bookmark in a new tab, and the option to delete the bookmark.
